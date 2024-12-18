@@ -8,7 +8,7 @@ from gymnasium.envs.registration import register
 import math
 
 from sb3_contrib import RecurrentPPO
-from modulars import EnemyModular,ExitModular,CoinModular
+from modulars import EnemyModular,ExitModular,CoinModular,BattleModular
 
 class MRL_env(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
@@ -41,11 +41,13 @@ class MRL_env(gym.Env):
         self.agent_pos = self.start_pos.copy()
 
         self.enemy_index = 2
-        self.enemy_modular = EnemyModular('trained_modules/p1/normal_best02',self,0)
+        #self.enemy_modular = EnemyModular('trained_modules/p1/normal_best02',self,0)
+        self.enemy_modular = BattleModular('simple_MRL_demo_2.0/trained_modules/p4/normal_best',self,0)
+
         self.coin_index  = 3
-        self.coin_modular = CoinModular('trained_modules/p2/normal_best03',self,1)
+        self.coin_modular = CoinModular('simple_MRL_demo_2.0/trained_modules/p2/normal_best03',self,1)
         self.medicine_index = 4
-        self.medicine_modular = ExitModular('trained_modules/p3/normal_best02',self,2)
+        self.medicine_modular = ExitModular('simple_MRL_demo_2.0/trained_modules/p3/normal_best02',self,2)
         self.snare_index = 5
 
         self.modular_list = [self.enemy_modular,self.coin_modular,self.medicine_modular]
@@ -61,6 +63,10 @@ class MRL_env(gym.Env):
         self.enemy_level_list = [1,3,5]
         self.enemy_level_index = 0
         self.enemy_level = 1
+
+        self.agent_level_list = [1,3,5]
+        self.agent_level_index = 0
+        self.agent_level = 1
 
         self.price_list = [1,3,5]
         self.price_index = 0
@@ -91,6 +97,7 @@ class MRL_env(gym.Env):
 
         random.shuffle(self.enemy_level_list)
         random.shuffle(self.price_list)
+        random.shuffle(self.agent_level_list)
         self.reset_map()
 
         self.stepNum = 0
@@ -111,18 +118,30 @@ class MRL_env(gym.Env):
         self.curr_map = self.origin_map.copy()
         self.agent_pos = self.start_pos.copy()
         self.goal_list = self.get_goal().copy()
-        if self.enemy_level_index% 3 == len(self.enemy_level_list)-1:
-            if self.price_index% 3 == len(self.price_list)-1:
-                self.price_index+=1
+
+        self.enemy_level_index,self.agent_level_index,self.price_index = self.updata_index(self.enemy_level_list,self.enemy_level_index,
+                                                                                        self.agent_level_list,self.agent_level_index,
+                                                                                        self.price_list,self.price_index)
+
+
+        self.enemy_level= self.enemy_level_list[self.enemy_level_index]
+        self.agent_level= self.agent_level_list[self.agent_level_index]
+        self.price =self.price_list[self.price_index]   
+
+
+    def updata_index(self,a,ai,b,bi,c,ci):
+        if (ci +1 )%len(c) == 0:
+            if (bi +1 )%len(b) == 0:
+                ci +=1
+                bi +=1
+                ai +=1
             else:
-                self.enemy_level_index+=1
-                self.price_index+=1
+                ci +=1
+                bi +=1
         else:
-            self.enemy_level_index+=1       
-
-        self.enemy_level = self.enemy_level_list[self.enemy_level_index%3]
-        self.price = self.price_list[self.price_index%3]
-
+            ci+=1
+        
+        return ai%len(a) ,bi%len(b),ci%len(c)
     def _get_obs(self):
         return {
             "map":np.array(self.curr_map, dtype=np.int32),
@@ -225,9 +244,11 @@ class MRL_env(gym.Env):
             reward -= 5
         else:
             if(self.curr_map[next_x][next_y] == self.enemy_index):
-                win = random.randint(1, 100)
-                self.action_log.append(3)
                 
+                self.action_log.append(3)
+                # enemy modual
+                """
+                win = random.randint(1, 100)
                 winRate = self.get_winRate(self.enemy_level)
                 self.fight_times += 1
                 if win < winRate*100:
@@ -237,6 +258,16 @@ class MRL_env(gym.Env):
                     msg = "fight losen"
                     reward -= 4
                     self.curr_HP-=3
+                """
+                #battle ,modular
+                if self.agent_level>= self.enemy_level:
+                    reward += 20 + 20* (self.agent_level - self.enemy_level)
+                    msg = "fight win"
+                else:
+                    reward -= 4
+                    self.curr_HP-=3
+                    msg = "fight losen"
+                
                     
                 action_over = self.task_over(msg ,next_x,next_y)
                 

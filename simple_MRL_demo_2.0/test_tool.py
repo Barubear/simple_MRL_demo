@@ -82,7 +82,7 @@ def draw_boxplot(data,title = "Data Distribution - KDE Plot", ylabel= "Value", x
 
 
 
-def ctrl_test( module_path,env,test_times,save_path ="test_log\ctrl_log" ):
+def ctrl_test( module_path,env,test_times,save_path ="simple_MRL_demo_2.0/test_log\ctrl_log02" ):
     
     print('model test:')
 
@@ -174,13 +174,13 @@ def modular_test(modelPath,env,test_times,savePath = None):
                 state_value_list.append(get_state_value(model,_states,obs,policy = "MultiInputLstmPolicy"))
                 step +=1
                 if step >= 100:
-                    clear_step.append(step/10)
+                    clear_step.append(step)
                     break
 
                 if dones :
                     
                     clear_times += 1
-                    clear_step.append(step/10)
+                    clear_step.append(step)
                     
                     break
                 

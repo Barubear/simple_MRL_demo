@@ -132,3 +132,47 @@ class ExitModular(Modulars):
     
     
     
+class BattleModular(Modulars):
+    def __init__(self,path,env,index) :
+        super().__init__(path,env,index,104,-104)
+        #self.max_state_value = 50
+        #self.min_state_value = -35
+        
+        
+    
+
+    def get_obs(self):
+        goal = self.main_env.goal_list[self.index]
+        agent = self.main_env.agent_pos
+        dis = self.get_distance(goal,agent)
+        #print(self.main_env.curr_HP)
+        return {
+            "map":np.array(self.main_env.curr_map, dtype=int),
+            "agent": np.array(agent, dtype=int),
+            "goal": np.array(goal, dtype=np.int32),
+            'dis': dis ,
+            'ennemylevel':self.main_env.enemy_level,
+            'agentlevel':self.main_env.agent_level,
+            'hp':self.main_env.curr_HP
+        }
+
+    """
+    def get_retrun(self):
+        obs = self.get_obs()
+        action, _states = self.module.predict(obs)
+        _states = np.array(_states)
+        obs_tensor_dict = self.module.policy.obs_to_tensor(obs)[0]
+        
+
+        _states_tensor = torch.tensor(_states,dtype=torch.float32).to(self.device)
+        episode_starts = torch.tensor([True] ,dtype=torch.float32).to(self.device)
+
+        #print("debug")
+        state_value = self.module.policy.predict_values(obs_tensor_dict,_states_tensor ,episode_starts).item()
+        
+        subvalue = self.scale_to_range(state_value,self.min_state_value,self.max_state_value,-90,60)
+        value = self.scale_to_range(subvalue,self.min_state_value,self.max_state_value)
+        
+        return action,value
+    """
+    

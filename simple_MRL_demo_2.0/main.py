@@ -8,6 +8,7 @@ import train
 from Envs.P1_Env import p1_Env
 from Envs.P2_Env import p2_Env
 from Envs.P3_Env import p3_Env
+from Envs.P4_Env import p4_Env
 from Envs.Dctest_env import Dctest_env
 from Envs.Modular_test_env import Modular_test_env
 from Envs.MRL_env import MRL_env
@@ -28,9 +29,10 @@ def Moduletrain(save_path,log_path,env,times = 2000000,testonly =False,re_tarin_
         gae_lambda=0.95,  # GAE λ
         clip_range=0.2,  # 剪辑范围
         ent_coef=0.1,  # 熵系数
-        batch_size=2048,  # 批大小
-        n_steps=2048,  # 步数
+        batch_size=1024,  # 批大小
+        n_steps=1024,  # 步数
         n_epochs=16,  # 训练次数
+       
         policy_kwargs=dict(lstm_hidden_size=128, n_lstm_layers=2),  # LSTM 设置
         verbose=1,
         )
@@ -42,7 +44,7 @@ def Moduletrain(save_path,log_path,env,times = 2000000,testonly =False,re_tarin_
 
 
 def train_navi_p1():
-    save_path = 'trained_modules/p1/normal_best02'
+    save_path = 'simple_MRL_demo_2.0/trained_modules/p1/normal_best02'
     log_path = 'logs/p1_log'
     env = make_vec_env("p1_Env-v0",monitor_dir=log_path)
     Moduletrain(save_path,log_path,env,2000000,testonly=True)
@@ -60,7 +62,7 @@ step
 
 
 def train_navi_p2():
-    save_path = 'trained_modules/p2/normal_best03'
+    save_path = 'simple_MRL_demo_2.0/trained_modules/p2/normal_best03'
     log_path = 'logs/p2_log'
     env = make_vec_env("p2_Env-v0",monitor_dir=log_path)
     Moduletrain(save_path,log_path,env,1000000,testonly=True)
@@ -78,7 +80,7 @@ step
 
 
 def train_navi_p3():
-    save_path = 'trained_modules/p3/normal_best02'
+    save_path = 'simple_MRL_demo_2.0/trained_modules/p3/normal_best02'
     log_path = 'logs/p3_log'
     env = make_vec_env("p3_Env-v0",monitor_dir=log_path)
     Moduletrain(save_path,log_path,env,1000000,testonly=True)
@@ -92,13 +94,26 @@ step
 0.955
 1.0
 """
+def train_navi_p4():
+    save_path = 'simple_MRL_demo_2.0/trained_modules/p4/normal_best'
+    log_path = 'simple_MRL_demo_2.0/logs/p4_log'
+    env = make_vec_env("p4_Env-v0",monitor_dir=log_path)
+    Moduletrain(save_path,log_path,env,2000000,testonly=True)
+    """
+    104.0913
+-108.98085
+22.560017
+step
+21.716
+0.996
+    """
 
 
 def train_ctrl():
-    save_path = 'trained_modules/ctrl/normal_best'
-    log_path = 'logs/ctrl_log'
+    save_path = 'simple_MRL_demo_2.0/trained_modules/ctrlchange/normal_best'
+    log_path = 'simple_MRL_demo_2.0/logs/ctrl_log'
     env = make_vec_env("MRL_env-v0",monitor_dir=log_path)
-    Moduletrain(save_path,log_path,env,2000000,test_function=test_tool.ctrl_test,testonly=True)
+    Moduletrain(save_path,log_path,env,2000000,test_function=test_tool.ctrl_test)
     """
 94.362
 4.015213
@@ -132,7 +147,7 @@ def Dc_test(module_path,index_start = 0,index_end = None):
         if i >=start and i <= end:
             dc = DC_dic[dc_key]
             env = make_vec_env(lambda:MRL_env(dc = dc))
-            save_path = 'test_log/ctrlDc/'+dc_key
+            save_path = 'simple_MRL_demo_2.0/test_log/ctrlDc0202/'+dc_key
             os.makedirs(save_path, exist_ok=True)
             test_tool.ctrl_test( module_path,env,1000,save_path)
         i+=1
@@ -147,8 +162,8 @@ def Dc_statistic(index_start = 0,index_end = None):
     for dc_key in DC_dic:
         
         if i >=start and i <= end:
-            load_path = "test_log/ctrlDc/"+dc_key+"/action_log.csv"
-            save_path = "statistic_log/ctrlDC/"+dc_key+"/"
+            load_path = "simple_MRL_demo_2.0/test_log/ctrl-org/changeDC"+dc_key+"/action_log.csv"
+            save_path = "simple_MRL_demo_2.0/statistic_log/ctrl-org/changeDC/"+dc_key+"/"
             os.makedirs(save_path, exist_ok=True)
             procces_statistic_testlog.statistic_testlog(load_path, exNum=dc_key,save_path=save_path)
         i+=1
@@ -158,9 +173,10 @@ def Dc_statistic(index_start = 0,index_end = None):
         
         
 
-#train_ctrl()
+train_ctrl()
 
-#procces_statistic_testlog.statistic_testlog("test_log/ctrl_log/action_log.csv")
+
+#procces_statistic_testlog.statistic_testlog("simple_MRL_demo_2.0/test_log/ctrl_log02/action_log.csv",save_path="simple_MRL_demo_2.0\statistic_log\ctrl03")
 DC_dic = {
 
 "B01":[90,-90,-90],
@@ -219,10 +235,11 @@ DC_dic = {
 
 }
 
-#Dc_test("trained_modules/ctrl/normal_best.zip",index_start=9)
+#Dc_test("simple_MRL_demo_2.0/trained_modules/ctrl02/normal_best.zip",index_start=3,index_end=16)
 #Dc_statistic(index_start=9)
 
-procces_statistic_testlog.comparative_analysis_sw(DC_dic,index_start=37,index_end=54,comparative_index=2)
+#procces_statistic_testlog.comparative_analysis_sw(DC_dic,index_start=3,index_end=16,comparative_index=2)
+#train_navi_p4()
 
 
 
