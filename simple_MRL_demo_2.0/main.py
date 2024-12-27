@@ -110,7 +110,7 @@ step
 
 
 def train_ctrl():
-    save_path = 'simple_MRL_demo_2.0/trained_modules/ctrlchange/normal_best'
+    save_path = 'simple_MRL_demo_2.0/trained_modules/ctrlchange/normal_best02'
     log_path = 'simple_MRL_demo_2.0/logs/ctrl_log'
     env = make_vec_env("MRL_env-v0",monitor_dir=log_path)
     Moduletrain(save_path,log_path,env,2000000,test_function=test_tool.ctrl_test)
@@ -176,7 +176,7 @@ def Dc_statistic(index_start = 0,index_end = None):
 train_ctrl()
 
 
-#procces_statistic_testlog.statistic_testlog("simple_MRL_demo_2.0/test_log/ctrl_log02/action_log.csv",save_path="simple_MRL_demo_2.0\statistic_log\ctrl03")
+procces_statistic_testlog.statistic_testlog("simple_MRL_demo_2.0/test_log/ctrl-battle-change/action_log.csv",save_path="simple_MRL_demo_2.0/statistic_log/ctrl-change/rog02")
 DC_dic = {
 
 "B01":[90,-90,-90],

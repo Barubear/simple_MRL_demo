@@ -82,7 +82,7 @@ def draw_boxplot(data,title = "Data Distribution - KDE Plot", ylabel= "Value", x
 
 
 
-def ctrl_test( module_path,env,test_times,save_path ="simple_MRL_demo_2.0/test_log\ctrl_log02" ):
+def ctrl_test( module_path,env,test_times,save_path ="simple_MRL_demo_2.0/test_log/ctrl-battle-change" ):
     
     print('model test:')
 

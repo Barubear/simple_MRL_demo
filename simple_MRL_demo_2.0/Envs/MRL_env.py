@@ -218,7 +218,7 @@ class MRL_env(gym.Env):
                     
 
         
-        
+        self.update_modular_list()
         return observation, total_reward, terminated, False, info
     
 
@@ -226,7 +226,7 @@ class MRL_env(gym.Env):
         reward = -0.5
         self.stepNum +=1
         action_over = False
-        true_action = self.action_list[action]
+        true_action = self.update_action_list(action)
         next_x= self.agent_pos[0]
         next_y =self.agent_pos[1]
 
@@ -260,11 +260,11 @@ class MRL_env(gym.Env):
                     self.curr_HP-=3
                 """
                 #battle ,modular
-                if self.agent_level>= self.enemy_level:
-                    reward += 20 + 20* (self.agent_level - self.enemy_level)
+                if self.agent_level> self.enemy_level:
+                    reward += 20 + 20*self.enemy_level
                     msg = "fight win"
                 else:
-                    reward -= 4
+                    reward -=self.enemy_level
                     self.curr_HP-=3
                     msg = "fight losen"
                 
@@ -291,7 +291,7 @@ class MRL_env(gym.Env):
                         self.curr_HP+=3
                         if self.curr_HP>= self.max_HP :
                             self.curr_HP = self.max_HP
-                        reward += (self.curr_HP -  hp_befor)*5
+                        reward += (self.curr_HP -  hp_befor)*2
                         msg = "recover " +str(hp_befor) +" to "+ str(self.curr_HP)
                     
                     
@@ -310,18 +310,22 @@ class MRL_env(gym.Env):
 
         if self.curr_HP <=0:
             self.curr_HP  = 0
-        self.action_list = self.update_modular_list()
+        
         
         
         return reward ,action_over
+    
+    def update_action_list(self, index):
+        action =self.modular_list[index].get_action()
+        return action
+
 
     def update_modular_list(self):
         vl = []
         al = []
         for m in self.modular_list:
-            action,state_value = m.get_retrun()
+            state_value = m.get_state_value()
             vl.append(state_value)
-            al.append(action)
         self.same_scale_stateValue = torch.tensor(vl)
         if self.dc != None:
             for i in range(len(self.dc)):
@@ -335,7 +339,7 @@ class MRL_env(gym.Env):
                     self.same_scale_stateValue[i] = new_sv
         self.softmax_output = torch.softmax(self.same_scale_stateValue ,dim= 0)
         
-        return al
+        
     
     def task_over(self,msg,next_x,next_y):
         self.log_msg = msg

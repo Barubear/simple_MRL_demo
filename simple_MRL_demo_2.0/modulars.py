@@ -18,6 +18,8 @@ class Modulars(ABC):
         self.min_state_value=min_state_value
         self.index = index
         self.data_scale = [0,100]
+        self.state = None
+        self.obs = None
 
     @abstractmethod
     def get_obs(self):
@@ -26,8 +28,8 @@ class Modulars(ABC):
     def get_distance(self,pos1,pos2):
         distance = math.sqrt((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2)
         return distance
-
-    def get_retrun(self):
+    """
+     def get_retrun(self):
         obs = self.get_obs()
         action, _states = self.module.predict(obs)
         _states = np.array(_states)
@@ -43,7 +45,35 @@ class Modulars(ABC):
         
         value = self.scale_to_range(state_value,self.min_state_value,self.max_state_value)
         
-        return action,value
+        return action,values
+    
+    """
+    def get_state_value(self):
+        obs = self.get_obs()
+    
+        if self.state == None:
+            print(obs)
+            action, self.state = self.module.predict(obs)
+
+        _states = np.array(self.state)
+        
+        obs_tensor_dict = self.module.policy.obs_to_tensor(obs)[0]
+        _states_tensor = torch.tensor(_states,dtype=torch.float32).to(self.device)
+        episode_starts = torch.tensor([True] ,dtype=torch.float32).to(self.device)
+        
+        state_value = self.module.policy.predict_values(obs_tensor_dict,_states_tensor ,episode_starts).item()
+        value = self.scale_to_range(state_value,self.min_state_value,self.max_state_value)
+
+        return value
+
+    def get_action(self):
+       
+        
+        self.obs = self.get_obs()
+        action, _states = self.module.predict(self.obs)
+       
+        
+        return action
 
     def scale_to_range(self,data,old_min, old_max , new_min=0, new_max=100):
 
