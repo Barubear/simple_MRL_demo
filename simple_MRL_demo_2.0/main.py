@@ -147,7 +147,7 @@ def Dc_test(module_path,index_start = 0,index_end = None):
         if i >=start and i <= end:
             dc = DC_dic[dc_key]
             env = make_vec_env(lambda:MRL_env(dc = dc))
-            save_path = 'simple_MRL_demo_2.0/test_log/ctrlDc0202/'+dc_key
+            save_path = 'simple_MRL_demo_2.0/test_log\change-dc/'+dc_key
             os.makedirs(save_path, exist_ok=True)
             test_tool.ctrl_test( module_path,env,1000,save_path)
         i+=1
@@ -162,8 +162,8 @@ def Dc_statistic(index_start = 0,index_end = None):
     for dc_key in DC_dic:
         
         if i >=start and i <= end:
-            load_path = "simple_MRL_demo_2.0/test_log/ctrl-org/changeDC"+dc_key+"/action_log.csv"
-            save_path = "simple_MRL_demo_2.0/statistic_log/ctrl-org/changeDC/"+dc_key+"/"
+            load_path = "simple_MRL_demo_2.0/test_log\ctrl-org\changeDC/"+dc_key+"/action_log.csv"
+            save_path = "simple_MRL_demo_2.0\statistic_log\ctrl-org\changeDC/"+dc_key+"/"
             os.makedirs(save_path, exist_ok=True)
             procces_statistic_testlog.statistic_testlog(load_path, exNum=dc_key,save_path=save_path)
         i+=1
@@ -173,10 +173,10 @@ def Dc_statistic(index_start = 0,index_end = None):
         
         
 
-train_ctrl()
+#train_ctrl()
 
 
-procces_statistic_testlog.statistic_testlog("simple_MRL_demo_2.0/test_log/ctrl-battle-change/action_log.csv",save_path="simple_MRL_demo_2.0/statistic_log/ctrl-change/rog02")
+#procces_statistic_testlog.statistic_testlog("simple_MRL_demo_2.0/test_log/ctrl-battle-change/action_log.csv",save_path="simple_MRL_demo_2.0/statistic_log/ctrl-change/rog02")
 DC_dic = {
 
 "B01":[90,-90,-90],
@@ -235,11 +235,13 @@ DC_dic = {
 
 }
 
-#Dc_test("simple_MRL_demo_2.0/trained_modules/ctrl02/normal_best.zip",index_start=3,index_end=16)
-#Dc_statistic(index_start=9)
+#Dc_test("simple_MRL_demo_2.0/trained_modules/ctrlchange/normal_best02",index_start=3,index_end=16)
 
-#procces_statistic_testlog.comparative_analysis_sw(DC_dic,index_start=3,index_end=16,comparative_index=2)
+#Dc_statistic(3,16)
+#procces_statistic_testlog.comparative_analysis_sw(DC_dic,index_start=4,index_end=16,comparative_index=0)
 #train_navi_p4()
+
+procces_statistic_testlog.Relationship("comparative_analysis.csv",0,1,"battle change")
 
 
 

@@ -261,7 +261,7 @@ class MRL_env(gym.Env):
                 """
                 #battle ,modular
                 if self.agent_level> self.enemy_level:
-                    reward += 20 + 20*self.enemy_level
+                    reward += 70 + 20*self.enemy_level
                     msg = "fight win"
                 else:
                     reward -=self.enemy_level
@@ -272,7 +272,7 @@ class MRL_env(gym.Env):
                 action_over = self.task_over(msg ,next_x,next_y)
                 
             elif (self.curr_map[next_x][next_y] == self.coin_index):
-                    reward += 24* self.price
+                    reward += 25* self.price
                     self.action_log.append(4)
                     self.curr_HP-=5
                     action_over = True
@@ -322,7 +322,6 @@ class MRL_env(gym.Env):
 
     def update_modular_list(self):
         vl = []
-        al = []
         for m in self.modular_list:
             state_value = m.get_state_value()
             vl.append(state_value)

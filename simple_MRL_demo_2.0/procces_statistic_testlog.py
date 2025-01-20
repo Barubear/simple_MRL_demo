@@ -90,7 +90,7 @@ def comparative_analysis_sw(dic, index_start = 0, index_end = None, comparative_
                 dc_log.append(0)
             else:
                 dc_log.append(dc[comparative_index])
-            load_path = "statistic_log/ctrlDC/"+dc_key+"/"+dc_key+".csv"
+            load_path = "simple_MRL_demo_2.0\statistic_log\ctrl-org\changeDC/"+dc_key+"/"+dc_key+".csv"
 
             with open(load_path,'r') as f:
                 reader = csv.reader(f)
@@ -109,3 +109,26 @@ def comparative_analysis_sw(dic, index_start = 0, index_end = None, comparative_
     else:
         save= "comparative_analysis.csv"
     test_tool.write_log(save,sort_log)
+
+
+def Relationship(load_path,index_dc,index_value,title,save_path = ""):
+
+    d_list = []
+    v_list =[]
+    with open(load_path,'r') as f:
+        reader = csv.reader(f)
+
+        for row in reader:
+            d_list.append(int(row[index_dc]))
+            v =round(float(row[index_value]), 3)
+            v_list.append(v)
+
+    
+    plt.plot(d_list,  v_list, color='blue', marker='o')
+
+
+    plt.title(title)
+    plt.xlabel('weight')
+    plt.ylabel('action percentage')
+    save_path = save_path + title + ".jpg"
+    plt.savefig(save_path)
